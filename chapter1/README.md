@@ -10,9 +10,7 @@
 ### Program Entry Point
 Windows program entry point is "WinMain", and it is declared in "WINBASE.H". WinMain can appear like the follow:
 
-'''c
+```C
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		   PSTR szCmdLine, int iCmdShow)
-'''
-
-
+```
