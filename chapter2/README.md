@@ -1,4 +1,4 @@
-# Chapter 2 - An Introduction to Unicode
+# Chapter 2 - An Introduction to Unicode 
 
 ### Unicode
 Unicode is an extension of ASCII character encoding. Rather than the 7 bitse used to represent each character in strict ACII,
@@ -11,3 +11,34 @@ ASCII, had it's origins in the late 1950s and was finalized in 1967. The America
 the ASCII coded character sets to be 7-bit in 1986. Below is a view of a ASCII table:
 
 ![ASCII Table](https://i.imgur.com/Xn6pBU9.gif)
+
+### The char Data Type
+To understand how C handles wide characters, an understanding of normal character definition for Win32 programs is necessary.
+
+An example of how to define and initializes a variable containing a single character in C:
+```C
+char c = 'A';
+```
+The above code variable c requires 1 byte of storage and will be initialized with the hexadecimal value	0x41, which is the ASCII code for the letter A.
+
+An example of how to define a char pointer in C:
+```C
+char *p;
+```
+Depending on the operating system, the size of the pointer could vary. In Win32, the pointer variable require 4 bytes of storage.
+
+An example of how to define a char pointer with a string value in C:
+```C
+char *p = "Hello!";
+```
+The variable p is still a pointer, so it requires at least 4 bytes of storage; additionally, the character stored in static memory and uses 7 bytes of storage the 6 bytes for the string with another 1 byte for the terminating 0.
+
+An example of how to define a char array in C:
+```C
+char a[10];
+```
+The variable a is a fixed length, so the compiler reserves 10 bytes of storage for the array. Using the "sizeof()" expression with the variable a will return a result of 10.
+
+
+An example of how to define and initialize a char array in C:
+
