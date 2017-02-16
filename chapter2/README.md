@@ -19,7 +19,8 @@ An example of how to define and initializes a variable containing a single chara
 ```C
 char c = 'A';
 ```
-The above code variable c requires 1 byte of storage and will be initialized with the hexadecimal value	0x41, which is the ASCII code for the letter A.
+The above code variable c requires 1 byte of storage and will be initialized with the hexadecimal value	0x41, which is the ASCII
+code for the letter A.
 
 An example of how to define a char pointer in C:
 ```C
@@ -31,14 +32,37 @@ An example of how to define a char pointer with a string value in C:
 ```C
 char *p = "Hello!";
 ```
-The variable p is still a pointer, so it requires at least 4 bytes of storage; additionally, the character stored in static memory and uses 7 bytes of storage the 6 bytes for the string with another 1 byte for the terminating 0.
+The variable p is still a pointer, so it requires at least 4 bytes of storage; additionally, the character stored in static memory
+and uses 7 bytes of storage the 6 bytes for the string with another 1 byte for the terminating 0.
 
 An example of how to define a char array in C:
 ```C
 char a[10];
 ```
-The variable a is a fixed length, so the compiler reserves 10 bytes of storage for the array. Using the "sizeof()" expression with the variable a will return a result of 10.
-
+The variable a is a fixed length, so the compiler reserves 10 bytes of storage for the array. Using the "sizeof()" expression with
+the variable a will return a result of 10.
 
 An example of how to define and initialize a char array in C:
+```C
+char a[] = "Hello!";
+```
 
+An example of how to define and initialize a static char array in C:
+```C
+static char a[] = "Hello!";
+```
+
+### Wider Characters
+Unicode or wide characters do not alter the meaning of the char data type in C. The char continues to indicate 1 byte of storage,
+and the sizeof(char) continues to return 1; however, depending on architecture a byte in C can be greater than 8 bits. Wide characters
+in C are based on the wchart_t data type. This type is defined in several different header files, including WHCAR.H - example:
+```C
+typedef unsigned short wchar_t;
+```
+The data type wchar_t is the same as an unsigned short integer (16 bits wide).
+
+An example of how to define and initialize a wchar_t in C:
+```C
+wchar_t c = 'A';
+```
+The variable c has a two byte hexidecimal value of 0x0041 - this is the Unicode representation of the letter 'A'.
