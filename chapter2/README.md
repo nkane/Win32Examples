@@ -61,8 +61,28 @@ typedef unsigned short wchar_t;
 ```
 The data type wchar_t is the same as an unsigned short integer (16 bits wide).
 
-An example of how to define and initialize a wchar_t in C:
+An example of how to define and initialize a wchar_t single character in C:
 ```C
 wchar_t c = 'A';
 ```
-The variable c has a two byte hexidecimal value of 0x0041 - this is the Unicode representation of the letter 'A'.
+The variable c has a two byte hexidecimal value of 0x0041 - this is the Unicode representation of the letter 'A'. Keep in mind that 
+Intel's architecture is little endian, so the bytes are stored by the least-significant byte. In memory the sequence it should be
+0x41 next to 0x00.
+
+An example of how to define and initialize a wchar_t string in C:
+```C
+wchar_t *p = L"Hello!";
+```
+The L (for long) preceding the first quotation mark indicates to the compiler that the string is to be stored with wide characters
+with every character occupying 2 bytes. The pointer variable p requires 4 bytes of storage, but the character string requires
+14 bytes - 2 bytes for each character with 2 bytes for the zeros at the end.
+
+An example of how to define and initalize a wchar_t char array in c:
+```C
+static wchar_t a[] = L"Hello!";
+```
+Similiar to the wchar_t pointer initialization, the above wchar_t array requires 14 bytes of storage. Using the sizeof() expression
+will return with the byte size 14. The value of a[1] is the wide character 'e', or the hexidecimal value 0x0065.
+
+### Wide-Character Library Functions
+
