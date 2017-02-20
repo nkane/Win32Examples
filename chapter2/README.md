@@ -85,4 +85,41 @@ Similiar to the wchar_t pointer initialization, the above wchar_t array requires
 will return with the byte size 14. The value of a[1] is the wide character 'e', or the hexidecimal value 0x0065.
 
 ### Wide-Character Library Functions
+The length of a normal 1 byte per character string can be found by using the strlen function call. Here is an exampl:
+```C
+char *pc = "Hello!";
+
+iLength = strlen(pc);
+```
+The varaible iLength will be set to 6, the number of characters in the char pointer variable pc.
+
+
+If we change the type to a wide character pointer, and attempt to call the strlen function a compiler warning will appear.
+```C
+wchar_t *pw = L"Hello!";
+
+// NOTE: causes compiler warning!
+// 'function' : incompatible types - from 'unsigned short *' to 'const char *'
+iLenght = strlen(pw);
+```
+The compiler warning is attempting to notify you that the strlen function argument accepts a type char pointer, but instead
+a unsigned short has been passed in. The program will still compile and run, but the value of iLength will not be accurate 
+and instead be set to the value 1.
+
+The 6 characters of the character string "Hello!" have the 16-bit values:
+```plain
+0x0048 0x0065 0x06C 0x006F 0x0021
+```
+
+Below is how a little endian system would ordre the bytes:
+```plain
+48 00 65 00 6C 00 6C 00 6F 00 21 00
+```
+
+The strlen function attempts to find the length of a string of characters by counting the bytes. In the above situation, 
+the function would count the first byte as a character, but it would assume that the second byte is a zero byte denoting
+the end of the string.
+
+
+
 
