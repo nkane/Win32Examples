@@ -1,7 +1,7 @@
 # Chapter 2 - An Introduction to Unicode 
 
 ### Unicode
-Unicode is an extension of ASCII character encoding. Rather than the 7 bitse used to represent each character in strict ACII,
+Unicode is an extension of ASCII character encoding. Rather than the 7 bits used to represent each character in strict ACII,
 or the 8 bits per character that have become common on computers, Unicode uses a full 16 bits for character encoding. This
 allows Unicode to represent all the letters, ideographs, and other symbols used in all the written languages of the world
 that are likely to be used in computer communication.
@@ -55,7 +55,7 @@ static char a[] = "Hello!";
 ### Wider Characters
 Unicode or wide characters do not alter the meaning of the char data type in C. The char continues to indicate 1 byte of storage,
 and the sizeof(char) continues to return 1; however, depending on architecture a byte in C can be greater than 8 bits. Wide characters
-in C are based on the wchart_t data type. This type is defined in several different header files, including WHCAR.H - example:
+in C are based on the wchar_t data type. This type is defined in several different header files, including WHCAR.H - example:
 ```C
 typedef unsigned short wchar_t;
 ```
@@ -118,8 +118,64 @@ Below is how a little endian system would ordre the bytes:
 
 The strlen function attempts to find the length of a string of characters by counting the bytes. In the above situation, 
 the function would count the first byte as a character, but it would assume that the second byte is a zero byte denoting
-the end of the string.
+the end of the string. This example illustrates the difference between the C language and the run-time library functions.
+The comiler interprets the string L"Hello!" as a collection of 16-bit short integers and stores them in the wchar_t array.
+The compiler also handles any array indexing and the sizeof operator, so these work properly; however, functions that are
+added during link time such as strlen expect strings that comprise of single-byte characters do not perform the operations
+that were intended.
 
+Fortunately, a majority of the C library functions that accept string arguments were rewritten in order to accept wide
+character arguments. An example is the function strlen, the wide character version is called wcslen ("wide character
+string length"), and it is declared both in STRING.H (where the declaration for strlen resides) and WCHAR.H.
 
+The strlen function declaration:
+```C
+size_t __cdecl strlen(const char*);
+```
 
+The wcslen function declaration:
+```C
+size_t __cdecl wcslen (const wchar_t*);
+```
+
+### Maintaining a Single Source
+One of the major disadvantages to 16 bit Unicode is that a program using 15 bit Unicode strings will occupy twice as much
+space; additionally, functions in the wide-character run-time library are larger than the usual functions. Creating two
+different versions of a program - one for ASCII strings and the other with Unicode strings might be a solution; however,
+another solution would be to attempt to maintain a single source base file that could compile for either ASCII or Unicode.
+There is a problem here, though - the run-time library functions have different names, characters are defined differently,
+and the preceding L in wide characters. 
+
+In order to help maintain a single source code base the TCHAR.H file included with Mircosoft Visual C++ provides a set
+of alternative names for the normal run-time library functions requiring string parameters. These are sometimes referred
+to as "generic" function names becuase they can refer to either the Unicode or non-Unicode version of the functions.
+
+If an identifier _UNICODE is defined and the TCHAR.H header file is included in the program, _tcslen is defined to be
+wcslen:
+```C
+#define _tsclen wcslen
+```
+
+If UNICODE is not defined, _tcslen is defined to be strlen:
+```C
+#define _tcslen strlen
+```
+
+Examples of other cases handled by TCHAR.H
+```C
+// _UNICODE is defined
+typedef wchar_t TCHAR;
+
+// _UNICODE is not defined
+typedef char TCHAR;
+
+// Macro to address wide char preceeding L
+#define __T(x) L##x
+```
+
+Lets describe what is going on with that macro, because the syntax is fairly obscure. In the ANSI C standard for the C
+preprocessor, the pair of number signs is called a "token paste", and it causes the letter L to be appended to the macro
+parameter. For example, if the macro parameter is "Hello!", then L##x is L"Hello!".
+
+### Windows Header File Types
 
