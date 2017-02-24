@@ -251,7 +251,27 @@ The second and third arguments to the function are pointers to constant characte
 and linked, Windows left the call to MessageBox unresolved. A table in the program's executable file allowed Windows to
 dynamically link the call from the program to the MessageBox function located in the USER library.
 
+The 32-bit version of Windows include USER.EXE for 16-bit compatibility, but it also has a dynamica-link library named USER32.DLL
+that contains entry points for the 32-bit versions of the user interface functions; however, there are two entry points for the
+function MessageBox - MessageBoxA (ASCII version) and MessageBoxW (wide character version).
 
+Example of different MessageBox definitions:
 
+```C
+WINUSERAPI int WINAPI MessageBoxA (HWND hWnd, LPCSTR lpText, 
+				   LPCSTR lpCaption, UINT uType);
 
+WINUSERAPI int WINAPI MessageBoxW (HWND hWnd, LPCWSTR lpText,
+				   LPCWSTR lpCaption, UINT uType);
+```
+
+Another macro that is defined is to help out with the MessageBox function:
+
+```C
+#ifdef UNICODE
+#define MessageBox MessageBoxW
+#else
+#define MessageBox MessageBoxA
+#endif
+```
 
