@@ -178,4 +178,80 @@ preprocessor, the pair of number signs is called a "token paste", and it causes 
 parameter. For example, if the macro parameter is "Hello!", then L##x is L"Hello!".
 
 ### Windows Header File Types
+Windows program includes the header file WINDOW.H, and this file includes a number of other header files, including
+WINDEF.H - this header file contains many of the basic type definitions used in Windows and which itself includes
+WINNT.H. The WINNT.H header file handles the basic Unicode support.
+
+The WINT.H header file includes the C header file CTYPE.H. The CTYPE.H header file is one of many C header files that have
+a definition of wchar_t; however, the WINNT.H header file defines new data types named CHAR and WCHAR:
+
+```C
+typedef char CHAR;
+typedef wchar_t WCHAR;
+```
+
+CHAR and WCHAR are the data tyapes recommended for your use in a Windows program when a 8-bit character and 16-bit character
+needs to be defined; additonally, the WINNT.H header file goes on to define six data types that can be used as pointers to
+8-bit character strings and for data types that can be used as pointers to const 8-bit character strings:
+
+```C
+typedef CHAR * PCHAR, * LPCH, * PCH, * NPSTR, * LPSTR, * PSTR;
+
+typedef CONST CHAR * LPCCH, * PCCH, * LPCSTR, * PCSTR;
+```
+
+The N and L prefixes stand for "near" or "long" and refer to the two different sizes of pointers in 16-bit Windows. There
+is no differentiation between near and long pointers in Win32.
+
+The WINNT.H header file includes defines for another six data types that can be used as pointers to 16-bit character strings
+and four data types that can be used as pointers to const 16-bit character strings:
+
+```C
+typedef WCHAR * PWCHAR, * LPWCH, * PWCH, * NWPSTR, * LPWSTR, * PWSTR;
+typedef CONST WCHAR * LPCWHC, * PCWCH, * LPCWSTR, * PCWSTR;
+``` 
+
+An example of TCHAR.H:
+
+```C
+#ifdef UNICODE
+
+typedef WCHAR TCHAR, * PTCHAR;
+typedef LPWSTR LPTCH, PTCH, PTSTR, LPTSTR;
+typedef LPCWSTR LPCTSTR;
+
+#define __TEXT(quote) L##quote
+
+#else
+
+typedef char TCHAR, * PTCHAR;
+typedef LPSTR LPTCH, PTCH, PTSTR, LPTSTR;
+typedef LPCSTR LPCTSTR;
+
+#define __TEXT(quote) quote
+
+#endif
+
+#define TEXT(quote) __TEXT(quote)
+
+```
+
+These definitions let you mix ASCII and Unicode characters strings in the same program or write a single program that can
+be compiled for either ASCII or Unicode.
+
+### The Windows Function Calls
+In a 16-bit version of Windows the MessageBox function was located in the dynamic-link library USER.EXE. In the WINDOWS.H
+header files, the MessageBox function was defined as follows:
+
+```C
+int WINAPI MessageBox (HWND, LPCSTR, LPCSTR, UINT);
+```
+
+The second and third arguments to the function are pointers to constant character strings. When a  Win16 program was compiled
+and linked, Windows left the call to MessageBox unresolved. A table in the program's executable file allowed Windows to
+dynamically link the call from the program to the MessageBox function located in the USER library.
+
+
+
+
 
