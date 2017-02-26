@@ -42,3 +42,20 @@ A callback function is a function that is caled through a function pointer. If a
 function is passed to another function as an argument and the pointer is used to call the function it
 points to it is said that a call back is made.
 
+Fundamentally, Windows operating system is making calls to your program. Every window that a program creates
+has an associated window procedure. That procedure is a function that could be either in the program itself
+or in a dynamica-link library. The Windows operating systems sends a message to a window by calling the
+window procedure. The define window procedure processes the messaged based on the type of message received
+and returns control to the operating system.
+
+A "window class" identifies the window procedure that processes the message to the window. The use of a
+window class alows multiple windows to be based on the same window class and hence use the same window
+procedure.
+
+When a Windows program begins execution, the operating system creates a "message queue" for the program.
+This message queue stores messages to all the windows a program might create; additionally, the program
+includes a code "message loop" to retrieve these messages from the queue and dispatch them to the
+appropriate window procedure. Other messages are sent directly to the window procedure without being
+placed in the message queue.
+
+### Thinking Globally
