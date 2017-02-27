@@ -59,3 +59,15 @@ appropriate window procedure. Other messages are sent directly to the window pro
 placed in the message queue.
 
 ### Thinking Globally
+The "hello window" example that has been provided is basically overhead found in every Windows program. The
+source file HELLOWINDOW.C has a WinMain function, and a second function named WndProc - this is the window
+procedure. Notice that the source code does not contain an explicit call to WndProc; however, these is a
+reference to WndProc in WinMain, which is why the function is declared near the top of the program.
+
+#### Thinking Globally - The Windows Function Calls
+HELLOWINDOW.C makes calls to no fewer than 18 Windows functions. In the order they occur, these functions
+are:
+
+```plain
+* LoadIcon: Loads an icon for use by a program.
+```
