@@ -155,5 +155,76 @@ as a 16-bit operating system, the third parameter to WndProc was defined as a WO
 unsigned short integer, and the fourth parameter was defined as a LONG, which was a 32-bit signed long
 integer. That's the reason for the "W" and "L" prefixes on the word "PARAM". In the 32-bit version of
 Windows WPARAM is defined as a UINT and LPARAM is defined as LONG (in C the long data type), so that both
-parameters to the window procedure are 32-bit values.
+parameters to the window procedure are 32-bit values. The "W" prefix to the "PARAM" creates a misnomer.
+
+The WndProc function returns a value of type LRESULT, meaning a LONG. The WinMain function is given a type of
+WINAPI (as well as every Windows function call  defined in the header files), and the WndProc funciton is given
+a type of CALLBACK - both of these identifiers are defined as __stdcall, which refers to a special calling
+sequence for function calls that occur between Windows itself and an applicaiton.
+
+The HELLOWINDOW.C example uses four data structures - below is a list:
+
+```plain
+Structure		Meaning
+--------------		------------------------
+MSG			Message structure
+WNDCLASS		Window class structure
+PAINTSTRUCT		Paint structure
+RECT			Rectangle structure
+```
+
+### Getting a Handle on Handles
+There are three uppercase identifiers for various types of "handles":
+
+```plain
+Identifier		Meaning
+--------------		----------------------
+HINSTANCE		Handle to an "instance" - the program itself
+HWND			Handle to a window
+HDC			Handle to a device context
+```
+
+Windows frequently makes use of handle. A handle is simply a number (usually 32 bits in size) that refers to
+an object. The handles in Windows are similiar to file handles used in conventional C or MS-DOS programming. A
+program always obtains a handle by calling a Windows function. THe program uses the handle in other Windows
+functions to refer to the object. The actual value of the handle is unimportant to your program, but the Window
+module that gives your program the handle knows how to use it to reference the object.
+
+
+### Hungarian Notation
+Many Windows programmers use a variable-naming convention known as "Hungarian Notation", in honor of the legendary
+Microsoft programmer Charles Simonyi. How does hungarian notation work? The variable name begins with a lowercase
+letter or letters that denote the data type of the variable. For example, sz prefix in szCmdLIne stands for 
+"string terminated by zero", and the h prefix in hInstance and hPrevInstance stands for "handle"; additonally, the
+i prefix in iCmdShow stands for "integer". The last two param WndProc use Hungarion Notation, but as explained
+earlier the wParam should properly be named uiParam; however, because these two parameters are defined using the
+data types WPARAM and LPARAM, the example was written to retain their traditional names.
+
+When naming struct variables, use the structure's name (or an abreviation of the structure name) in lowercase either
+as a prefix to the variable name or as the entire varible name. For example, in the WinMain function in HELLOWINDOW.c,
+the msg variable is a structure of the MSG type, wndclass is a structure of the WNDCLASS type. In the WndProc funciton,
+ps is a PAINTSTRUCT structure and rect is a RECT structure.
+
+Below is a list of prefixes that are commonly used in Hungarian notation:
+```plain
+Prefix			Data Type
+-----------		------------------------------------
+c			char or WCHAR or TCHAR
+by			BYTE (unsigned char)
+n			short
+i			int
+x, y			int used as x-coordinate or y-coordinate
+cx, cy			int used as x or y length; c stans for "count"
+b or f			BOOL (int); f stands for "flag"
+w			WORD (unsigned short)
+l			LONG (long)
+dw			DWORD (unsigned long)
+fn			function
+s			string
+sz			string terminated by 0 character
+h			handle
+p			pointer
+```
+
+### Registering the Window Class
 
