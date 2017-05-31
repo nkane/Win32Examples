@@ -227,4 +227,92 @@ p			pointer
 ```
 
 ### Registering the Window Class
+A window is always created based on a window class. The window class identifies the window procedure that processes
+messages to the window; additionaly, multiple window can be created based on a single window class. An example of this
+would be, buttons in windows - such as push buttons, check boxes, and radio button - these are created based on the same
+window class. The window class defines the window procedure and other characteristics of the window that are created based
+on that class.
+
+Prior to creating an application window, a window class must be registered by calling RegisterClass funciton. This function
+requires a single parameter - a pointer to a strcutre of type WNDCLASS. This structure has two different definitions in
+WINUSER.h header filea. First there is the ASCII version, WNDCLASSA:
+
+```C
+// lpfn means 'long pointer to a function'
+// recall in Win32 API there is no distinction between long pointers
+// and near pointers. This is a remnant of 16-bit Windows
+// The cb prefix stands for "count of bytes" and is often used for
+// a variable that denotes a byte size. The h prefix is a handle,
+// and the hbr means "handle to a brush". The lpsz prefix is a "long pointer
+// to a string terminated with a zero"
+typedef struct tagWNDCLASSA
+{
+	UINT		style;
+	WNDPROC		lpfnWndProc;
+	int		cbClsExtra;
+	int 		cbWndExtra;
+	HINSTANCE	hInstance;
+	HICON		hIcon;
+	HCURSOR		hCursor;
+	HBRUSH		hbrBackground;
+	LPCSTR		lpszMenuName;
+	LPCSTR		lpszClassName;
+}
+WNDCLASSA, * PWNDCLASSA, NEAR * NPWNDCLASSA, FAR * LPWNDCLASSA;
+```
+
+Second there is the Unicode version of the structure:
+
+```C
+typedef struct tagWNDCLASSW
+{
+	UINT		style;
+	WNDPROC		lpfnWndProc;
+	int		cbClsExtra;
+	int		cbWndExtra;
+	HINSTANCE	hInstance;
+	HICON		hIcon;
+	HCURSOR		hCursor;
+	HBRUSH		hBrBackground;
+	LPCWSTR		lpszMenuName;
+	LPCWSTR		lpszClassName;
+}
+WNDCLASSW, * PWNDCLASSW, NEAR * NPWNDCLASSW, FAR * LPWNDCLASSW;
+```
+
+The only difference is that the last two fields are defined as pointers to constants wide character strings rather than
+pointers to constant ASCII character strings. After defining both of these structures, preprocessor statements are 
+made in order to determine what to typedef properly:
+
+```C
+#ifdef UNICODE
+typedef WNDCLASSW WNDCLASS;
+typedef PWNDCLASSW PWNDCLASS;
+typedef NPWNDCLASSW NPWNDCLASS;
+typedef LPWNDCLASSW LPWNDCLASS;
+#else
+typedef WNDCLASSA WNDCLASS;
+typedef PWNDLASSA PWNDCLASS;
+typedef NPWNDCLASSA NPWNDCLASS;
+typedef LPWNDCLASSA LPWNDCLASS;
+#endif
+```
+
+In WinMain, a WNDCLASS variable should be maded with all 10 fields initialized and passed to the function RegisterClass.
+The two most import fields in this structure is the second WNDPROC and last LPCSTR (or Unicode equivalent). The other fields
+describe characteristics of the window class. The style field in the WNDCLASS struct is a bitmask field that can use
+defined constants from the WINUSER.h header file for styling typically "CS_*". Example of WINUSER.h header defines:
+
+```C
+#define CS_VREDRAW		0x0001
+#define CS_HREDRAW		0x0002
+#define CS_KEYCVTWINDOW		0x0004
+#define	CS_DBLCLKS		0x0008
+// ... etc
+``` 
+
+These define fields are called "bit flags", because each identifier sets a single bit in a composite value.
+
+
+
 
