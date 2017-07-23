@@ -292,7 +292,7 @@ typedef NPWNDCLASSW NPWNDCLASS;
 typedef LPWNDCLASSW LPWNDCLASS;
 #else
 typedef WNDCLASSA WNDCLASS;
-typedef PWNDLASSA PWNDCLASS;
+typedef PWNDLASSA PWNDCLASS
 typedef NPWNDCLASSA NPWNDCLASS;
 typedef LPWNDCLASSA LPWNDCLASS;
 #endif
@@ -308,11 +308,97 @@ defined constants from the WINUSER.h header file for styling typically "CS_*". E
 #define CS_HREDRAW		0x0002
 #define CS_KEYCVTWINDOW		0x0004
 #define	CS_DBLCLKS		0x0008
-// ... etc
+#define CS_OWNDC		0x0020
+#define CS_CLASSDC		0x0040
+#define CS_PARENTDC		0x0080
+#define	CS_NOKEYCVT		0x0100
+#define CS_NOCLOSE		0x0200
+#define	CS_SAVEBITS		0x0800
+#define CS_BYTEALIGNCLIENT	0X1000
+#define CS_BYTEALIGNWINDOW	0X2000
+#define	CS_GLOBALCLASS		0x4000
+#define CS_IME			0x00010000
 ``` 
 
-These define fields are called "bit flags", because each identifier sets a single bit in a composite value.
+These define fields are called "bit flags", because each identifier sets a single bit in a composite value. The two values used
+in the example program hellowindow indciate that  all windows created based on this class are to be completed repainted whenever
+the horizontal window size (CS_HREDRAW) or the vertical window size (CS_VREDRAW) changes. When the window is resized, you should
+see that the text string is redrawn to be in the new center of the window.
+
+The second field of the WNDCLASS structure is initialized by the statement:
+
+```C
+wndclass.lpfnWndProc = WndProc;
+```
+
+This sets the window procedure for this window class to WndProc, which is the second function in the example hellowindow.c. This
+window procedure will process all message to all windows created based on this window class. In C, when you use a function name
+in  astatement like this, you are referring to a pointer to a function.
+
+The next two fields are used to reverse extra space in the class strcuture and the window strcture that Windows maintains 
+internally:
+
+```C
+wndclass.cbClsExtra = 0;
+wndclass.cbWndExtra = 0;
+```
+
+A program can use this extra space for its own purposes. The examle does not use this feature, so zero is specified. Otherwise,
+as the hungarian notation indicates, the field would be set to a "count of bytes".
+
+The nex field is simply the instance handle of the program (which is one of the parameters to WinMain):
+
+```C
+wndclass.hInstance = hInstance;
+```
+
+The following statement sets an icon for all windows created based on this window class. The icon is a small bitmap picture that 
+represents the program to the user. When the program is running, the icon appears in the Window taskbar and at the left side of
+the program window's title bar.
+
+```C
+wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+```
+
+The following statement loads a predefined mouse cursor known as IDC_ARROW and returns a handle to the cursor. This handle is
+assigned to the bCursor field of the WNDCLASS structure. When themouse cursor appeasr over the client area of a window that is
+created based on this class, the cursor becomes a small arrow.
+
+```C
+wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+```
+
+The next field specifies that background color of the client area of windows created based on this class. The hbr prefix of the
+hbrBackground field name stands for "handle to a brush". A brush is a graphics term that refers to a colored patterned of pixel
+used to fill an area. Windows has several standard, or "stock", brushes. The GetStockObject call shown here returns a handle to
+a white brush. This means that the background of the client area of the window will be solid white, which is a common choice:
+
+```C
+wndclass.hbrBackground = GetStockObject(WHITE_BRUSH);
+```
+
+The next field specifies the window class menu, the example hellowindow does not have an application menu, so the field is set to 
+NULL.
+
+```C
+wndclass.lpszMenuName = NULL;
+```
+
+Finally the class must be given a name, the field lpszClassName stores the name of the class. This string is composed of either
+ASCII characters or Unicode characters depending on whether the UNICODE identifier has been defined.
+
+```C
+wndclass.lpszClassName = szAppName;
+```
 
 
+When all ten fields of the structure have been initialized, the example program hellowindow registers the window class by calling
+the RegisterClass function. The only argument to the function is a pinter to the WNDCLASS structure; however, there are two different
+function calls in reality - RegisterClassA function that takes a WNDCLASSA and RegisterClassW function that takes a WNDCLASSW, which
+function the program uses to register the window class determines whether messages are sent to the window will contain ASCII text
+or Unicode text.
 
+If you receive a failure from initializing a window from a window class, the GetLastError function helps your determine the cause of
+the error. GetLastError is a general-purpose function in Windows to get extended error information when a function call fails. You
+can look in WINERROR.H to see the values of error code identifiers.
 
