@@ -38,7 +38,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			    NULL,				// window menu handle
 			    hInstance,				// program instance handle
 			    NULL);				// creation parameters
-	
+
 	ShowWindow(hwnd, iCmdShow);
 	UpdateWindow(hwnd);
 
@@ -61,7 +61,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message)
 	{
-		case WM_CREATE: 
+		case WM_CREATE:
 		{
 			PlaySound(TEXT("hellowin.wav"), NULL, SND_FILENAME | SND_ASYNC);
 			return 0;
@@ -70,7 +70,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_PAINT:
 		{
 			hdc = BeginPaint(hwnd, &ps);
-			
+
 			GetClientRect(hwnd, &rect);
 
 			DrawText(hdc, TEXT("Hello Win32 API!"), -1, &rect,
@@ -79,7 +79,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return 0;
 		} break;
 
-		case WM_DESTROY: 
+		case WM_DESTROY:
 		{
 			PostQuitMessage(0);
 			return 0;
@@ -93,6 +93,3 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	return DefWindowProc(hwnd, message, wParam, lParam);
 }
-
-
-
