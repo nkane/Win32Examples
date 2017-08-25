@@ -69,41 +69,41 @@ HELLOWINDOW.C makes calls to no fewer than 18 Windows functions. In the order th
 are:
 
 ```plain
-* LoadIcon: Loads an icon for use by a program.
+* LoadIcon: 		Loads an icon for use by a program.
 
-* LoadCursor: Loads a mouse cursor for use by a program.
+* LoadCursor: 		Loads a mouse cursor for use by a program.
 
-* GetStockObject: Obtains a graphic object, in this case a brush used for painting the window's background.
+* GetStockObject: 	Obtains a graphic object, in this case a brush used for painting the window's background.
 
-* RegisterClass: Registers a window class for the program's window.
+* RegisterClass: 	Registers a window class for the program's window.
 
-* MessageBox: Displays a message box.
+* MessageBox: 		Displays a message box.
 
-* CreateWindow: Creates a window based on a window class.
+* CreateWindow: 	Creates a window based on a window class.
 
-* ShowWindow: Shows the window on the screen.
+* ShowWindow: 		Shows the window on the screen.
 
-* UpdateWindow: Directs the window to paint itself.
+* UpdateWindow: 	Directs the window to paint itself.
 
-* GetMessage: Obtains a message from the message queue.
+* GetMessage: 		Obtains a message from the message queue.
 
-* TranslateMessage: Translates some keyboard messages.
+* TranslateMessage: 	Translates some keyboard messages.
 
-* DispatchMessage: Sends a message to a window procedure.
+* DispatchMessage: 	Sends a message to a window procedure.
 
-* PlaySound: Plays sound file.
+* PlaySound: 		Plays sound file.
 
-* BeginPaint: Initiates the beginning of window painting.
+* BeginPaint: 		Initiates the beginning of window painting.
 
-* GetClientRect: Obtains the dimensions of the window's client area.
+* GetClientRect: 	Obtains the dimensions of the window's client area.
 
-* DrawText: Displays a text string.
+* DrawText: 		Displays a text string.
 
-* EndPaint: Ends window painting.
+* EndPaint: 		Ends window painting.
 
-* PostQuitMessage: Inserts a "quit" message into the message queue.
+* PostQuitMessage: 	Inserts a "quit" message into the message queue.
 
-* DefWindowProc: Performs default processing of message.
+* DefWindowProc: 	Performs default processing of message.
 ```
 
 These functions are described in the Platform SDK documentation, and they are declared in various header
@@ -195,7 +195,6 @@ an object. The handles in Windows are similar to file handles used in convention
 program always obtains a handle by calling a Windows function. The program uses the handle in other Windows
 functions to refer to the object. The actual value of the handle is unimportant to your program, but the Window
 module that gives your program the handle knows how to use it to reference the object.
-
 
 ### Hungarian Notation
 Many Windows programmers use a variable-naming convention known as "Hungarian Notation", in honor of the legendary
@@ -310,6 +309,7 @@ describe characteristics of the window class. The style field in the WNDCLASS st
 defined constants from the WINUSER.h header file for styling typically "CS_*". Example of WINUSER.h header defines:
 
 ```C
+
 #define CS_VREDRAW		0x0001
 #define CS_HREDRAW		0x0002
 #define CS_KEYCVTWINDOW		0x0004
@@ -324,6 +324,7 @@ defined constants from the WINUSER.h header file for styling typically "CS_*". E
 #define CS_BYTEALIGNWINDOW	0X2000
 #define	CS_GLOBALCLASS		0x4000
 #define CS_IME			0x00010000
+
 ```
 
 These define fields are called "bit flags", because each identifier sets a single bit in a composite value. The two values used
@@ -345,8 +346,10 @@ The next two fields are used to reverse extra space in the class structure and t
 internally:
 
 ```C
+
 wndclass.cbClsExtra = 0;
 wndclass.cbWndExtra = 0;
+
 ```
 
 A program can use this extra space for its own purposes. The example does not use this feature, so zero is specified. Otherwise,
@@ -355,7 +358,9 @@ as the Hungarian notation indicates, the field would be set to a "count of bytes
 The next field is simply the instance handle of the program (which is one of the parameters to WinMain):
 
 ```C
+
 wndclass.hInstance = hInstance;
+
 ```
 
 The following statement sets an icon for all windows created based on this window class. The icon is a small bitmap picture that
@@ -363,7 +368,9 @@ represents the program to the user. When the program is running, the icon appear
 the program window's title bar.
 
 ```C
+
 wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+
 ```
 
 The following statement loads a predefined mouse cursor known as IDC_ARROW and returns a handle to the cursor. This handle is
@@ -371,7 +378,9 @@ assigned to the bCursor field of the WNDCLASS structure. When the mouse cursor a
 created based on this class, the cursor becomes a small arrow.
 
 ```C
+
 wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+
 ```
 
 The next field specifies that background color of the client area of windows created based on this class. The hbr prefix of the
@@ -380,21 +389,27 @@ used to fill an area. Windows has several standard, or "stock", brushes. The Get
 a white brush. This means that the background of the client area of the window will be solid white, which is a common choice:
 
 ```C
+
 wndclass.hbrBackground = GetStockObject(WHITE_BRUSH);
+
 ```
 
 The next field specifies the window class menu, the example hellowindow does not have an application menu, so the field is set to
 NULL.
 
 ```C
+
 wndclass.lpszMenuName = NULL;
+
 ```
 
 Finally the class must be given a name, the field lpszClassName stores the name of the class. This string is composed of either
 ASCII characters or Unicode characters depending on whether the UNICODE identifier has been defined.
 
 ```C
+
 wndclass.lpszClassName = szAppName;
+
 ```
 
 When all ten fields of the structure have been initialized, the example program hellowindow registers the window class by calling
@@ -408,14 +423,17 @@ the error. GetLastError is a general-purpose function in Windows to get extended
 can look in WINERROR.H to see the values of error code identifiers.
 
 ### Creating the Windows
+The window class defines general characteristics of a window, thus allowing the same window class to be used to create many different windows. When you create a window by calling CreateWindow, more specific information
+is provided to the window.
 
-The window class defines general characteristics of a window, thus allowing the same window class to be used to create many different windows. When you create a window by calling CreateWindow, more specific information is provided to the window.
+The window class and the window are different, and this could cause confusion. All push-button windows are created based on the same window class. The window procedure associated with this class is located
+inside Windows itself, and it is responsible for processing keyboard and mouse input to the push button and defining the button's visual appearance on the screen.
 
-The window class and the window are different, and this could cause confusion. All push-button windows are created based on the same window class. The window procedure associated with this class is located inside Windows itself, and it is responsible for processing keyboard and mouse input to the push button and defining the button's visual appearance on the screen.
-
-The CreateWindow function call returns a handle to the created window. This handle is typically saved in a variable. Programs will use this handle to refer to the window. If a program creates many windows, each has a different handle. The handle to a window is one of the most important handles that a Windows program handles.
+The CreateWindow function call returns a handle to the created window. This handle is typically saved in a variable. Programs will use this handle to refer to the window. If a program creates many windows,
+each has a different handle. The handle to a window is one of the most important handles that a Windows program handles.
 
 ```C
+
 hwnd = CreateWindow(szAppName,				// window class name
 		    TEXT("The Hello Program"),		// window caption
 		    WS_OVERLAPPEDWINDOW,		// window style
@@ -427,28 +445,36 @@ hwnd = CreateWindow(szAppName,				// window class name
 		    NULL, 				// window menu handle
 		    hInstance,				// program instance handle
 		    NULL);
-```
-### Displaying the Windows
-After a window class has been registered and a window has been created internally in Windows - meaning that Windows has allocated a block of memory to hold all the information about the window that was specified in the CreateWindow call.
 
-In order to display the window, two more calls are needed. The first is ShowWindow(hwnd, iCmdShow). The ShowWindow function puts the window on the display. The function call UpdateWindow(hwnd), then causes the client area to be painted. It accomplishes this by sending the window procedure (this is, the WndProc function) a WM_PAINT message.
+```
+
+### Displaying the Windows
+After a window class has been registered and a window has been created internally in Windows - meaning that Windows has allocated a block of memory to hold all the information about the
+window that was specified in the CreateWindow call.
+
+In order to display the window, two more calls are needed. The first is ShowWindow(hwnd, iCmdShow). The ShowWindow function puts the window on the display. The function call UpdateWindow(hwnd), then causes the client
+area to be painted. It accomplishes this by sending the window procedure (this is, the WndProc function) a WM_PAINT message.
 
 ### The Message Loop
-After the UpdateWindow function call, the window is fully visible on the video display. The program must now make itself ready to read keyboard and mouse input from the user. Windows maintains a "message queue" for each Windows program currently running under Windows. When an input event occurs, Windows translates the event into a "message" that it places in the program's message queue.
+After the UpdateWindow function call, the window is fully visible on the video display. The program must now make itself ready to read keyboard and mouse input from the user. Windows maintains a "message queue" for each Windows
+program currently running under Windows. When an input event occurs, Windows translates the event into a "message" that it places in the program's message queue.
 
 A program retrieves these message from the message queue by executing a block of code known as the "message loop":
 
 ```C
+
 while(GetMessage(&msg, NULL, 0, 0))
 {
 	TranslateMessage(&msg);
 	DispatchMessage(&msg);
 }
+
 ```
 
 The msg variable is a structure of type MSG, which is defined in WINUSER.H header file:
 
 ```C
+
 typdef struct tagMSG
 {
 	HWND 	hwnd;
@@ -459,23 +485,121 @@ typdef struct tagMSG
 	POINT	pt;
 }
 MSG, * PMSG;
+
 ```
 The POINT data type is yet another structure, defined in the WINDDEF.H header file like this:
 
 ```C
+
 typedef struct tagPOINT
 {
 	LONG	x;
 	LONG	y;
 }
 POINT, *PPOINT;
+
 ```
 
 The GetMessage call that begins the message loop retrieves a message from the message queue:
 
 ```C
+
 GetMessage(&msg, NULL, 0, 0);
+
 ```
 
-This call passes to Windows a pointer to a MSG structure named msg. THe second, third, and forth argument
+This call passes to Windows a pointer to a MSG structure named msg. THe second, third, and forth arguments are set to NULL or 0 to indicate that the program wants all messages for all window created by the program.
+Windows fills in the fields of the message structure with the next message queue. The fields of the structure are:
 
+```plain
+
+* hwnd 		- the handle to the window which message is directed to.
+
+* message 	- the message indentifier. this is the number that identifies the message. For each message, there is a corresponding identifier defined in the Windows header file (most of them in WINUSER.H) that begins
+		  with the identifier WM ("window message").
+
+* wParam 	- a 32-bit "message parameter", the meaning and value of which depend on the particular message.
+
+* lParam 	- another 32-bit message was placed in the message queue.
+
+* time 		- the time the message was placed in the message queue.
+
+* pt 		- the mouse coordinate at the time the message was placed in the message queue.
+
+```
+
+If the message field of the message retrieved from the message queue is anything except WM_QUIT (which equals 0x0012), GetMessage returns a nonzero value. A WM_QUIT message causes GetMessage to return 0. TranslateMessage
+function call passes the msg struct back to Windows for keyboard translation and the Dispatch function call passes the msg struct back to Windows. Windows then sends the messages to the appropriate window procedure for
+processing. Meaning, Windows calls the WndProc function. AFter WndProc processes the message, it returns control to Windows, which is still servicing the DispatchMessage call. When Windows returns from the DispatchMessage
+call, the message loop continuesd with the next GetMessage call.
+
+```C
+
+TranslateMessage(&msg);
+
+DispatchMessage(&msg);
+
+```
+
+### The Window Procedure
+The window procedure determines what the widnow displays in its client area and how the window responds to user input. A window procedure can have any name (as long as it doesn't conflict with some other name). A
+Windows program can contain more than one window procedure. A window procedure is always associated with a particular window class that you register by calling RegisterClass. The CreateWindow function creates a window
+based on a particular window class. More than one window can be created based on the same window class. A window procedure is always defined like this:
+
+```C
+
+/* 
+ * hwnd 		- handle to window
+ * message		- a number that identifies the message
+ * wParam / lParam	- 32-bit message parameters that provide more information about
+ * 			  the message. What these parameters contain is specific to each
+ *			  type of message. Sometimes a message parameter is two 16-bit 
+ *			  values stuck together, and sometimes a message parameter is a
+ * 			  pointer to a text string or to a data structure.
+ *
+ */
+LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+
+```
+
+If a program creates multiple windows based on the same window class (and hence the same window procedure), hwnd identifies the particular window receiving the message. Programs generally don't call window procedures
+directly. A program can indirectly call its own window procedure by calling a function named SendMessage.
+
+### Processing the Messages
+Every message that a window procedure receives is identified by a number, which is the message parameter to the window procedure. The Windows header file WINUSER.H defines identifiers beginning with the prefix WM
+("window message") for each type of message. A switch and case construction can be used to determine what message the window procedure is receiving and how to process accordingly. When a window procedure processes
+a message, it should return 0 from the window procedure. All message that a window procedure chooses not to process must be passed to a Windows function named DefWindowProc. The vbalue returned from DefWindowProc
+must be returned from the window procedure.
+
+```C
+
+switch (iMsg)
+{
+	case WM_CREATE:
+		// [process WM_CREATE message]
+		return 0;
+	case WM_PAINT:
+		// [process WM_PAINT message]
+		return 0;
+	case WM_DESTROY:
+		// [process WM_DESTORY message]
+		return 0;
+}
+
+return DefWindowProc(hwnd, iMsg, wParam, lParam);
+
+```
+
+It is important to call DefWindowProc for default processing of all messages that your window procedure does not process; otherwise, behavior regarded as normal such as beinng able to terminate the program, will not work.
+
+### Playing a Sound File
+The function PlaySound is called in order have a sound played - in the example, it was requested to have the sound played asynchronously - that is, the PlaySound function call is to return as soon as the sound file starts
+playing without waiting for it to complete. 
+
+```C
+
+PlaySound(TEXT("hellwin.wav"), NULL, (SND_FILENAME | SND_ASYNC));
+
+```
+
+### The WM_PAINT Message
