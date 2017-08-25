@@ -171,23 +171,23 @@ sequence for function calls that occur between Windows itself and an application
 The HELLOWINDOW.C example uses four data structures - below is a list:
 
 ```plain
-Structure					Meaning
+Structure		Meaning
 --------------		------------------------
-MSG								Message structure
-WNDCLASS					Window class structure
-PAINTSTRUCT				Paint structure
-RECT							Rectangle structure
+MSG			Message structure
+WNDCLASS		Window class structure
+PAINTSTRUCT		Paint structure
+RECT			Rectangle structure
 ```
 
 ### Getting a Handle on Handles
 There are three uppercase identifiers for various types of "handles":
 
 ```plain
-Identifier				Meaning
+Identifier		Meaning
 --------------		----------------------
-HINSTANCE					Handle to an "instance" - the program itself
-HWND							Handle to a window
-HDC								Handle to a device context
+HINSTANCE		Handle to an "instance" - the program itself
+HWND			Handle to a window
+HDC			Handle to a device context
 ```
 
 Windows frequently makes use of handle. A handle is simply a number (usually 32 bits in size) that refers to
@@ -213,23 +213,23 @@ ps is a PAINTSTRUCT structure and rect is a RECT structure.
 
 Below is a list of prefixes that are commonly used in Hungarian notation:
 ```plain
-Prefix				Data Type
+Prefix			Data Type
 -----------		------------------------------------
-c							char or WCHAR or TCHAR
-by						BYTE (unsigned char)
-n							short
-i							int
-x, y					int used as x-coordinate or y-coordinate
-cx, cy				int used as x or y length; c stans for "count"
-b or f				BOOL (int); f stands for "flag"
-w							WORD (unsigned short)
-l							LONG (long)
-dw						DWORD (unsigned long)
-fn						function
-s							string
-sz						string terminated by 0 character
-h							handle
-p							pointer
+c			char or WCHAR or TCHAR
+by			BYTE (unsigned char)
+n			short
+i			int
+x, y			int used as x-coordinate or y-coordinate
+cx, cy			int used as x or y length; c stans for "count"
+b or f			BOOL (int); f stands for "flag"
+w			WORD (unsigned short)
+l			LONG (long)
+dw			DWORD (unsigned long)
+fn			function
+s			string
+sz			string terminated by 0 character
+h			handle
+p			pointer
 ```
 
 ### Registering the Window Class
@@ -253,12 +253,12 @@ WINUSER.h header file. First there is the ASCII version, WNDCLASSA:
 // to a string terminated with a zero"
 typedef struct tagWNDCLASSA
 {
-	UINT			style;
+	UINT		style;
 	WNDPROC		lpfnWndProc;
-	int				cbClsExtra;
-	int 			cbWndExtra;
+	int		cbClsExtra;
+	int 		cbWndExtra;
 	HINSTANCE	hInstance;
-	HICON			hIcon;
+	HICON		hIcon;
 	HCURSOR		hCursor;
 	HBRUSH		hbrBackground;
 	LPCSTR		lpszMenuName;
@@ -272,12 +272,12 @@ Second there is the Unicode version of the structure:
 ```C
 typedef struct tagWNDCLASSW
 {
-	UINT			style;
+	UINT		style;
 	WNDPROC		lpfnWndProc;
-	int				cbClsExtra;
-	int				cbWndExtra;
+	int		cbClsExtra;
+	int		cbWndExtra;
 	HINSTANCE	hInstance;
-	HICON			hIcon;
+	HICON		hIcon;
 	HCURSOR		hCursor;
 	HBRUSH		hBrBackground;
 	LPCWSTR		lpszMenuName;
@@ -397,7 +397,6 @@ ASCII characters or Unicode characters depending on whether the UNICODE identifi
 wndclass.lpszClassName = szAppName;
 ```
 
-
 When all ten fields of the structure have been initialized, the example program hellowindow registers the window class by calling
 the RegisterClass function. The only argument to the function is a pointer to the WNDCLASS structure; however, there are two different
 function calls in reality - RegisterClassA function that takes a WNDCLASSA and RegisterClassW function that takes a WNDCLASSW, which
@@ -409,3 +408,74 @@ the error. GetLastError is a general-purpose function in Windows to get extended
 can look in WINERROR.H to see the values of error code identifiers.
 
 ### Creating the Windows
+
+The window class defines general characteristics of a window, thus allowing the same window class to be used to create many different windows. When you create a window by calling CreateWindow, more specific information is provided to the window.
+
+The window class and the window are different, and this could cause confusion. All push-button windows are created based on the same window class. The window procedure associated with this class is located inside Windows itself, and it is responsible for processing keyboard and mouse input to the push button and defining the button's visual appearance on the screen.
+
+The CreateWindow function call returns a handle to the created window. This handle is typically saved in a variable. Programs will use this handle to refer to the window. If a program creates many windows, each has a different handle. The handle to a window is one of the most important handles that a Windows program handles.
+
+```C
+hwnd = CreateWindow(szAppName,				// window class name
+		    TEXT("The Hello Program"),		// window caption
+		    WS_OVERLAPPEDWINDOW,		// window style
+		    CW_USEDEFAULT,			// initial x position
+		    CW_USEDEFAULT,			// initial y position
+		    CW_USEDEFAULT,			// initial x size
+		    CW_USEDEFAULT,			// initial y size
+		    NULL,				// parent window handle
+		    NULL, 				// window menu handle
+		    hInstance,				// program instance handle
+		    NULL);
+```
+### Displaying the Windows
+After a window class has been registered and a window has been created internally in Windows - meaning that Windows has allocated a block of memory to hold all the information about the window that was specified in the CreateWindow call.
+
+In order to display the window, two more calls are needed. The first is ShowWindow(hwnd, iCmdShow). The ShowWindow function puts the window on the display. The function call UpdateWindow(hwnd), then causes the client area to be painted. It accomplishes this by sending the window procedure (this is, the WndProc function) a WM_PAINT message.
+
+### The Message Loop
+After the UpdateWindow function call, the window is fully visible on the video display. The program must now make itself ready to read keyboard and mouse input from the user. Windows maintains a "message queue" for each Windows program currently running under Windows. When an input event occurs, Windows translates the event into a "message" that it places in the program's message queue.
+
+A program retrieves these message from the message queue by executing a block of code known as the "message loop":
+
+```C
+while(GetMessage(&msg, NULL, 0, 0))
+{
+	TranslateMessage(&msg);
+	DispatchMessage(&msg);
+}
+```
+
+The msg variable is a structure of type MSG, which is defined in WINUSER.H header file:
+
+```C
+typdef struct tagMSG
+{
+	HWND 	hwnd;
+	UINT	message;
+	WPARAM	wParam;
+	LPARAM  lParam;
+	DWORD	time;
+	POINT	pt;
+}
+MSG, * PMSG;
+```
+The POINT data type is yet another structure, defined in the WINDDEF.H header file like this:
+
+```C
+typedef struct tagPOINT
+{
+	LONG	x;
+	LONG	y;
+}
+POINT, *PPOINT;
+```
+
+The GetMessage call that begins the message loop retrieves a message from the message queue:
+
+```C
+GetMessage(&msg, NULL, 0, 0);
+```
+
+This call passes to Windows a pointer to a MSG structure named msg. THe second, third, and forth argument
+
