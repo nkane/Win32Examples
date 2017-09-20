@@ -603,3 +603,77 @@ PlaySound(TEXT("hellwin.wav"), NULL, (SND_FILENAME | SND_ASYNC));
 ```
 
 ### The WM_PAINT Message
+The WM_PAINT message is extremely important in Windows programming. It informs a program when part or all of the window's client area is "invalid" and must be "updated", which means that it must be redrawns or "painted".
+The message is sent whenever the program calls UpdateWindow in WinMain, and it directs the window procedure to draw something on the client area; additionally, when resizing a window, the client area becomes invalid -
+recall that the example HELLOWINDOW wndclass structure style field was set to the flags CS_HREDRAW and CS_VREDRAW, this directs Window to invalidate the whole window when the size changes. THe window procedure
+then recieves a WM_PAINT message.
+
+Whenever a window is minimized, Windows does not save the contents of the client area. This would be too data expensive to retain, and instead Windows invalidates the windows and starts to "rebroadcast"/"capture" paint
+messages whenever the window is restored; additionally, when window overlaps another window - Windows does not save the area of a window covered by another window. When that area of the window later is unconvered, it
+is flagged as invalid and paint messages are "broadcasted"/"received" again.
+
+Usually, the WM_PAINT message being with a call to BeginPaint and ends with EndPaint:
+
+```C
+hdc = BeginPaint(hwnd, &ps);
+EndPaint(hwnd, &ps);
+```
+
+In both cases, the first argument is a handle to the program's window, and the second argument is a pointer to a structure of type PAINTSTRUCT. The PAINTSTRUCT structure contains some information that window procedure
+that a window procedure can use for painting the client area. These will be discussed later.
+
+When calling BeginPaint, Windows erases the background of the client area if it hasnot been erased already. The background is erased using the brush specified in the hbrBackground field of the WNDCLASS structure used
+to register the window class. This call validates the entire client area and returns a "handle to a device context". A device context refers to a physical output device (such as a video display) and its device driver.
+The device context handle is needed to display text and graphics in the client area of the window. Using the device context handle returned from BeginPaint, you cannot draw outside the client area, even if it is
+attempted. EndPaint releases the device context handle invalidating it.
+
+If a window procedure does not process the WM_PAINT message, it must be passed on to DefWindowProc, which simply calls BeginPaint and EndPaint in succession validating the client area. After WndProc calls BeginPaint, 
+GetClientRect is called
+
+```C
+GetClientRect(hwnd, &rect);
+```
+
+The first argument is the handle to the program's window, second argument is a pointer to a rectangle structure of type RECT. This structure has four LONG fields named left, top, right, and bottom. The GetClientRect
+function sets these four fields to the dimensions of the client area of the window. The left and top fields are always set to 0, right and bottom fields represent the width and height of the client area in pixels.
+
+WndProc does not do anything with the RECT structure except pass a pointer to it as the fourth argument to DrawText:
+
+```C
+DrawText(hdc, TEXT("Hello, Windows!"), -1, &rect, DT_SINGLELINE | DT_CENTER | CT_VCENTER);
+```
+
+DrawText, as the name impies, draws text - since this function draws something the first argument is a handle to the device context returned from BeginPaint, the second argument is the text to draw, and the third
+argument is set to -1 to indicate that the text string is terminated with a zero character. The last argument to DrawText is a series of bit flags defined in WINUSER.H - although DrawText seems to be a GDI function
+call because it displays output, it is actually considered part of the User module because it is fairly high-level drawing function.
+
+### The WM_DESTORY Message
+This message indicates that Windows is in the process of destorying a window based on a command from the user. THe message is a result of the user clicking on the close button or selecting close from
+the program's system menu. Earlier it was mentioned that GetMessage returns nonzero for any message other than WM_QUIT that it retrieves from the message queue. When GetMessage retrieves a WM_QUIT message,
+GetMessage returns 0 - causing WinMain to drop out of the message loop and executres the following state:
+
+```C
+return msg.wParam;
+```
+
+The wParam field of the structure is the value passed to the PostQuitMessage function (generally 0) - the above return statement exits from WinMain and terminates the program.
+
+### The Windows Programming Hurdles
+A standard simply Windows application - WinMain contains only program overhead necessary to register the window class, create the window, and retrieve and dispatch messages from the message queue. All the real
+action of the program occures in the window procedure.
+
+### Don't Call Me, I'll Call You
+Windows makes calls to your program, specifically to the window procedure called WndProc in the example. The window procedure is associated with a window class that the program reigsters by calling RegisterClass.
+A window that is created based on this window class uses the window procedure for processing all messages to the window. Windows sends a message to the window by calling the window procedure. Usually, 
+all of the calls to WndProc are in the form of messages. In most Windows programs, the bulk of the program is dedicated to handling these messages. The messages that Windows can send to a program are generally
+identified with names that begin with the letter WM and are defined in the WINUSER.H header file.
+
+The idea of a rutine within a program that is called from outside of the program is not unheard of in character-mode programming. The signal function in C can trap a Ctrl-C break or other interrupts from the
+operating system. Old programs written for MS-DOS often trapped hardware interrupts.
+
+In Windows this concept is extended to cover everything. Everything that happens to a window is relayed to the window procedure in the form of a message. The window procedure then responds to this message
+in some way or passes the message to DefWindowPRoc for default processing.
+
+### Queued and Nonqueued Messages
+
+
