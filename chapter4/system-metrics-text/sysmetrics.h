@@ -3,8 +3,8 @@
  *
  */
 
-#define len(array)(sizeof(array)/sizeof(array[0]))
-#define numlines(len(SysMetrics));
+#define len(array) (sizeof(array)/sizeof(array[0]))
+#define numlines (len(sysMetrics))
 
 typedef struct _sysMetric
 {
@@ -23,10 +23,10 @@ SysMetric sysMetrics[] =
         SM_CYSCREEN, TEXT("SM_CYSCREEN"), TEXT("Screen height in pixels")
     },
     {
-        SM_CXSCROLL, TEXT("SM_CXSCROLL"), TEXT("Vertical scroll width")
+        SM_CXVSCROLL, TEXT("SM_CXSCROLL"), TEXT("Vertical scroll width")
     },
     {
-        SM_CYSCROLL, TEXT("SM_CYSCROLL"), TEXT("Horizontal scroll height")
+        SM_CYHSCROLL, TEXT("SM_CYSCROLL"), TEXT("Horizontal scroll height")
     },
     {
         SM_CYCAPTION, TEXT("SM_CYCAPTION"), TEXT("Caption bar height")
@@ -80,7 +80,7 @@ SysMetric sysMetrics[] =
         SM_CYVSCROLL, TEXT("SM_CYVSCROLL"), TEXT("Vertical scroll arrow height") 
     },
     {
-        SM_CXHSCROL, TEXT("SM_CXHTHUMB"), TEXT("Horizontal scroll arrow width")
+        SM_CXHSCROLL, TEXT("SM_CXHTHUMB"), TEXT("Horizontal scroll arrow width")
     },
     {
         SM_DEBUG, TEXT("SM_DEBUG"), TEXT("Debug version flag")
@@ -119,10 +119,10 @@ SysMetric sysMetrics[] =
         SM_CYDOUBLECLK, TEXT("SM_CYDOUBLECLK"), TEXT("Double click y tolerance")
     },
     {
-        SM_CXICONSPACING, TEXT("SM_CXICONSPACING", TEXT("Horizontal icon spacing")
+        SM_CXICONSPACING, TEXT("SM_CXICONSPACING"), TEXT("Horizontal icon spacing")
     },
     {
-        SM_CYICONSPACING, TEXT("SM_CYICONSPACING", TEXT("Vertical icon spacing")
+        SM_CYICONSPACING, TEXT("SM_CYICONSPACING"), TEXT("Vertical icon spacing")
     },
     {
         SM_MENUDROPALIGNMENT, TEXT("SM_MENUDROPALIGNMENT"), TEXT("Left or right menu drop")
@@ -221,6 +221,24 @@ SysMetric sysMetrics[] =
         SM_MIDEASTENABLED, TEXT("SM_MIDEASTENABLED"), TEXT("Hebrew and Arabic enabled flag")
     },
     {
-        SM_
+        SM_MOUSEWHEELPRESENT, TEXT("SM_MOUSEWHEELPRESENT"), TEXT("Mouse wheel present flag")
+    },
+    {
+        SM_XVIRTUALSCREEN, TEXT("SM_XVIRTUALSCREEN"), TEXT("Virtual screen x origin")
+    },
+    {
+        SM_YVIRTUALSCREEN, TEXT("SM_YVIRTUALSCREEN"), TEXT("Virtual screen y origin")
+    },
+    {
+        SM_CXVIRTUALSCREEN, TEXT("SM_CXVIRTUALSCREEN"), TEXT("Virtual screen width")
+    },
+    {
+        SM_CYVIRTUALSCREEN, TEXT("SM_CYVIRTUALSCREEN"), TEXT("Virtual screen height")
+    },
+    {
+        SM_CMONITORS, TEXT("SM_CMONITORS"), TEXT("Number of monitors")
+    },
+    {
+        SM_SAMEDISPLAYFORMAT, TEXT("SM_SAMEDISPLAYFORMAT"), TEXT("Same color format flag")
     }
 };
