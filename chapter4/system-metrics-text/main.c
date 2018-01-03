@@ -8,11 +8,10 @@
 #include "sysmetrics.h"
 
 LRESULT CALLBACK
-WndProc (HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int WINAPI
 WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow);
-
 
 int WINAPI
 WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
@@ -40,7 +39,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdSh
     }
 
     hwnd = CreateWindow(szAppName, TEXT("Get System Metrics No. 1"),
-                        WS_OVERLAPPEDWINDOW,
+                        WS_OVERLAPPEDWINDOW | WS_VSCROLL,
                         CW_USEDEFAULT, CW_USEDEFAULT,
                         CW_USEDEFAULT, CW_USEDEFAULT,
                         NULL, NULL, hInstance, NULL);
@@ -57,11 +56,11 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdSh
 }
 
 LRESULT CALLBACK
-WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    static int cxChar, cxCaps, cyChar;
+    static int cxChar, cxCaps, cyChar, cyClient, iVscrollPos;
     HDC hdc;
-    int i;
+    int i, y;
     PAINTSTRUCT ps;
     TCHAR szBuffer[10];
     TEXTMETRIC tm;
@@ -75,7 +74,62 @@ WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             cxChar = tm.tmAveCharWidth;
             cxCaps = (tm.tmPitchAndFamily & 1 ? 3 : 2) * cxChar / 2;
             cyChar = tm.tmHeight + tm.tmExternalLeading;
+
             ReleaseDC(hwnd, hdc);
+
+            SetScrollRange(hwnd, SB_VERT, 0, numlines - 1, FALSE);
+            SetScrollPos(hwnd, SB_VERT, iVscrollPos, TRUE);
+            
+            return 0;
+        } break;
+
+        case WM_SIZE:
+        {
+            cyClient = HIWORD(lParam);
+            return 0;
+        } break;
+
+        case WM_VSCROLL:
+        {
+            switch (LOWORD(wParam))
+            {
+                case SB_LINEUP:
+                {
+                    iVscrollPos -= 1;
+                } break;
+                
+                case SB_LINEDOWN:
+                {
+                    iVscrollPos += 1;
+                } break;
+
+                case SB_PAGEUP:
+                {
+                    iVscrollPos -= cyClient / cyChar;
+                } break;
+
+                case SB_PAGEDOWN:
+                {
+                    iVscrollPos += cyClient / cyChar;
+                } break;
+
+                case SB_THUMBPOSITION:
+                {
+                    iVscrollPos = HIWORD(wParam);
+                } break;
+
+                default:
+                    break;
+            }
+
+            iVscrollPos = max(0, min(iVscrollPos, numlines -1));
+
+            if (iVscrollPos != GetScrollPos(hwnd, SB_VERT))
+            {
+                SetScrollPos(hwnd, SB_VERT, iVscrollPos, TRUE);
+                InvalidateRect(hwnd, NULL, TRUE);
+            }
+
             return 0;
         } break;
 
@@ -84,17 +138,18 @@ WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             hdc = BeginPaint(hwnd, &ps);
             for (i = 0; i < numlines; i++)
             {
-                TextOut(hdc, 0, cyChar * i,
+                y = cyChar * (i - iVscrollPos);
+                TextOut(hdc, 0, y,
                         sysMetrics[i].szLabel,
                         lstrlen(sysMetrics[i].szLabel));
 
-                TextOut(hdc, 22 * cxCaps, cyChar * i,
+                TextOut(hdc, 22 * cxCaps, y,
                         sysMetrics[i].szDescription,
                         lstrlen(sysMetrics[i].szDescription));
 
                 SetTextAlign(hdc, TA_RIGHT | TA_TOP);
 
-                TextOut(hdc, 22 * cxCaps + 40 * cxChar, cyChar * i, szBuffer,
+                TextOut(hdc, 22 * cxCaps + 40 * cxChar, y, szBuffer,
                         wsprintf(szBuffer, TEXT("%5d"),
                                  GetSystemMetrics(sysMetrics[i].iIndex)));
 
