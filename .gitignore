@@ -1,3 +1,6 @@
+# ignore directories
+build/
+
 # Compiled Object files
 *.slo
 *.lo
@@ -27,3 +30,20 @@
 *.exe
 *.out
 *.app
+
+# Vim
+# vim-swap
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
+
+# vim-session
+Session.vim
+
+# vim-temporary
+.netrwhist
+*~
+
+# vim-auto-generated tag files
+tags
